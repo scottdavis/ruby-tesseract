@@ -1,4 +1,5 @@
-Dir["tesseract/*.rb"].each { |file| require file }
+require 'dependency_checker'
+require 'file_handler'
 require 'pathname'
 require 'digest/md5'
 module Tesseract

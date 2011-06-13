@@ -1,10 +1,4 @@
-require 'test/unit'
-require 'test/unit/assertions'
-require 'rubygems'
-require 'shoulda'
 require 'test_helper'
-require 'mocha'
-require '../tesseract/tesseract'
 
 class TesseractTest < Test::Unit::TestCase
   TEST_FILE = File.join(File.dirname(__FILE__), 'photo.jpeg')
