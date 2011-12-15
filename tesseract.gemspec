@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files        = `git ls-files`.split("\n")
   s.executables  = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
   s.require_path = 'tesseract'
-  s.homepage = %q{http://github.com/jetviper21/ruby-tesseract}
+  s.homepage = %q{http://github.com/scottdavis/ruby-tesseract}
   s.rdoc_options = ["--charset=UTF-8"]
   s.required_rubygems_version = ">= 1.3.6"
   s.add_development_dependency "bundler", ">= 1.0.0"
