@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.date = Date.today.to_s
   s.files        = `git ls-files`.split("\n")
   s.executables  = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
-  s.require_path = 'tesseract'
+  s.require_path = 'lib'
   s.homepage = %q{http://github.com/scottdavis/ruby-tesseract}
   s.rdoc_options = ["--charset=UTF-8"]
   s.required_rubygems_version = ">= 1.3.6"
