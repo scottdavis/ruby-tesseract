@@ -9,7 +9,7 @@ class TesseractTest < Test::Unit::TestCase
     end
     should "throw exception" do
       assert_raises Exception, Tesseract::DependencyChecker::OS_ERROR do
-        Tesseract::Process.new(TEST_FILE)
+        Tesseract::Process.new(TEST_FILE, :check_deps => true)
       end
     end
     teardown do
@@ -24,7 +24,7 @@ class TesseractTest < Test::Unit::TestCase
     end
     should "throw exception" do
       assert_raises Exception, Tesseract::DependencyChecker::IMAGE_MAGICK_ERROR do
-        Tesseract::Process.new(TEST_FILE)
+        Tesseract::Process.new(TEST_FILE, :check_deps => true)
       end
     end
   end
@@ -35,7 +35,7 @@ class TesseractTest < Test::Unit::TestCase
     end
     should "throw exception" do
       assert_raises Exception, Tesseract::DependencyChecker::TESSERACT_ERROR do
-        Tesseract::Process.new(TEST_FILE)
+        Tesseract::Process.new(TEST_FILE, :check_deps => true)
       end
     end
   end
@@ -85,6 +85,22 @@ class TesseractTest < Test::Unit::TestCase
       assert_equal expected, result
     end
 
+    context "tesseract invalid commands" do
+      should "raise an exception when convert could not be executed" do
+        options = {:convert_command => "derp"}
+        tess = Tesseract::Process.new(TEST_FILE, options)
+        assert_raises RuntimeError do
+          tess.to_s
+        end
+      end
+      should "raise an exception when tesseract could not be executed" do
+        options = {:tesseract_command => "derp"}
+        tess = Tesseract::Process.new(TEST_FILE, options)
+        assert_raises RuntimeError do
+          tess.to_s
+        end
+      end
+    end
   end
 
   context "tesseract diff lang" do

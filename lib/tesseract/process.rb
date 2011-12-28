@@ -37,9 +37,6 @@ module Tesseract
 
       if options.has_key? :tesseract_options
         @options[:tesseract_options] = defaults[:tesseract_options].merge!(options[:tesseract_options]) if options.has_key? :tesseract_options
-        [:tesseract_options, :convert_options].each do |k|
-          options.delete(k) if options.has_key? k
-        end
       end
 
 
@@ -50,6 +47,10 @@ module Tesseract
           @options[:convert_options][k] = v | options[:convert_options][k]
         end
         options.delete :convert_options
+      end
+
+      [:tesseract_options, :convert_options].each do |k|
+        options.delete(k) if options.has_key? k
       end
       @options = defaults.merge options
     end
@@ -93,7 +94,8 @@ module Tesseract
     # Converts the source image to a tiff file.
     def to_tiff
       temp_file = FileHandler.create_temp_file("#{@hash}.tif")
-      system generate_convert_command(temp_file)
+      executed = system generate_convert_command(temp_file)
+      raise RuntimeError, "`#{@options[:convert_command]}` could not be executed." if executed.nil?
       temp_file
     end
 
@@ -102,7 +104,8 @@ module Tesseract
       temp_text_file = FileHandler.create_temp_file(@hash.to_s)
       config_file = write_configs
       txt_file = "#{temp_text_file}.txt"
-      system [@options[:tesseract_command], image_file.to_s, temp_text_file.to_s, "-l #{@options[:lang]}", config_file, "&> /dev/null"].join(' ')
+      executed = system [@options[:tesseract_command], image_file.to_s, temp_text_file.to_s, "-l #{@options[:lang]}", config_file, "&> /dev/null"].join(' ')
+      raise RuntimeError, "`#{@options[:tesseract_command]}` could not be executed." if (executed.nil? || executed == false)
       out = File.read(txt_file)
       File.unlink txt_file
       out
