@@ -17,6 +17,5 @@ This is a library for using the tesseract OCR in ruby applications
     
 Config options are also supported
 
-    tess = Tesseract::Process.new("photo.jpg", {:lang => 'some language', :chop_enable => 0})
+    tess = Tesseract::Process.new("photo.jpg", {:lang => :fra, :tesseract_options => {:chop_enable => 0}})
     tess.to_s
-    
