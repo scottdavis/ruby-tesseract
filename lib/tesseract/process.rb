@@ -4,6 +4,8 @@ module Tesseract
 
     attr_reader :image
 
+    CONVERT_COMMAND = 'convert'
+    TESSERACT_COMMAND = 'tesseract'
     # Initialize a Tesseract translation process
     # image_name is the file to translate
     # options can be of the following:
@@ -18,8 +20,8 @@ module Tesseract
         :tesseract_options => {},
         :convert_options => {:input => [], :output => []},
         :lang => :eng,
-        :convert_command => 'convert',
-        :tesseract_command => 'tesseract',
+        :convert_command => CONVERT_COMMAND,
+        :tesseract_command => TESSERACT_COMMAND,
         :check_deps => false
       }
       @out = nil

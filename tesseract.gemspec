@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.required_rubygems_version = ">= 1.3.6"
   s.add_development_dependency "bundler", ">= 1.0.0"
-  s.required_ruby_version = '>= 1.9.0'
+  s.required_ruby_version = '>= 1.8.6'
 end
