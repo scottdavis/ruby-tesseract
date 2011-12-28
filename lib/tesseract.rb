@@ -4,7 +4,7 @@ path = File.join(File.dirname(__FILE__), 'tesseract')
 end
 require 'pathname'
 require 'digest/md5'
-
+require 'shellwords'
 
 module Tesseract
 
