@@ -5,9 +5,6 @@ module Tesseract
     @tempfiles = []
     def self.create_temp_file(filename)
       file = Pathname.new(Dir::tmpdir).join(filename)
-
-      raise IOError, "Temporary file `#{tmp_name}` could not be created." unless File.exists? file
-
       @tempfiles << file
       return file
     end
@@ -16,6 +13,5 @@ module Tesseract
         File.unlink(file.to_s) if File.exists?(file.to_s)
       end
     end
-
   end
 end
