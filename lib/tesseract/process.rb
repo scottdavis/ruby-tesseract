@@ -27,10 +27,39 @@ module Tesseract
       @out = nil
       @image = Pathname.new(image_name)
       @hash = Digest::MD5.hexdigest("#{@image}-#{Time.now}")
-      @options = defaults.merge! options
+
+      merge_options! defaults, options
       DependencyChecker.check! if @options[:check_deps]
     end
 
+    def merge_options!(defaults, options)
+      @options = {}
+
+      if options.has_key? :tesseract_options
+        @options[:tesseract_options] = defaults[:tesseract_options].merge!(options[:tesseract_options]) if options.has_key? :tesseract_options
+        [:tesseract_options, :convert_options].each do |k|
+          options.delete(k) if options.has_key? k
+        end
+      end
+
+
+      if options.has_key? :convert_options
+        @options[:convert_options] = defaults[:convert_options]
+        defaults[:convert_options].each do |k,v|
+          next unless options[:convert_options].has_key? k
+          @options[:convert_options][k] = v | options[:convert_options][k]
+        end
+        options.delete :convert_options
+      end
+      @options = defaults.merge options
+    end
+
+    def lang=(lang)
+      @options[:lang]
+    end
+    def lang
+      @options[:lang]
+    end
     def to_s
       @out ||= process!
     end
@@ -48,20 +77,23 @@ module Tesseract
       text.gsub(/^\//, '')
     end
 
-    # Converts the source image to a tiff file.
-    def to_tiff
-      temp_file = FileHandler.create_temp_file("#{@hash}.tif")
-
+    # Generates the convert command.
+    def generate_convert_command(temp_file)
       cmd = [@options[:convert_command]]
       input_opt = @options[:convert_options][:input]
       output_opt = @options[:convert_options][:output]
 
-      cmd << input_opt unless input_opt.empty?
-      cmd << @image.to_s
-      cmd << output_opt unless output_opt.empty?
+      cmd += input_opt unless input_opt.empty?
+      cmd << Shellwords.shellescape(@image.to_s)
+      cmd += output_opt unless output_opt.empty?
       cmd << temp_file.to_s
+      cmd.join(" ")
+    end
 
-      system Shellwords.join(cmd)
+    # Converts the source image to a tiff file.
+    def to_tiff
+      temp_file = FileHandler.create_temp_file("#{@hash}.tif")
+      system generate_convert_command(temp_file)
       temp_file
     end
 

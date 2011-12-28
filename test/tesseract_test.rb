@@ -16,7 +16,7 @@ class TesseractTest < Test::Unit::TestCase
       silence_stream(STDERR) { Object.const_set("RUBY_PLATFORM", @old_val) }
     end
   end
-  
+
   context "dependency imagemagic fails" do
     setup do
       Tesseract::DependencyChecker.expects(:run_cmd).with("which tesseract").returns('foo').once
@@ -28,7 +28,7 @@ class TesseractTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "dependency tesseract fails" do
     setup do
       Tesseract::DependencyChecker.expects(:run_cmd).with("which tesseract").returns('').once
@@ -39,7 +39,7 @@ class TesseractTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "tesseract" do
     setup do
       @tess = Tesseract::Process.new(TEST_FILE)
@@ -47,30 +47,65 @@ class TesseractTest < Test::Unit::TestCase
     should "return text" do
       assert !@tess.to_s.empty?
     end
-    should "hanve lang of eng" do
-      assert_equal 'eng', @tess.lang
+    should "have lang of eng" do
+      assert_equal :eng, @tess.lang
+    end
+    should "generate a valid convert command" do
+      expected = "convert #{TEST_FILE} derp"
+      result = @tess.generate_convert_command('derp')
+      assert_equal expected, result
     end
   end
-  
+
+  context "tesseract convert options" do
+    should "generate a valid convert command with input options" do
+      options = {:convert_options => {:input => ['-size 120x120']}}
+      tess = Tesseract::Process.new(TEST_FILE, options)
+      expected = "convert -size 120x120 #{TEST_FILE} derp"
+      result = tess.generate_convert_command('derp')
+      assert_equal expected, result
+    end
+    should "generate a valid convert command with output options" do
+      options = {:convert_options => {:output => ['-resize 120x120']}}
+      tess = Tesseract::Process.new(TEST_FILE, options)
+      expected = "convert #{TEST_FILE} -resize 120x120 derp"
+      result = tess.generate_convert_command('derp')
+      assert_equal expected, result
+    end
+    should "generate a valid convert command with input and output options" do
+      options = {
+        :convert_options => {
+          :input => ['-size 120x120'],
+          :output => ['-resize 140x140']
+        }
+      }
+      tess = Tesseract::Process.new(TEST_FILE, options)
+      expected = "convert -size 120x120 #{TEST_FILE} -resize 140x140 derp"
+      result = tess.generate_convert_command('derp')
+      assert_equal expected, result
+    end
+
+  end
+
   context "tesseract diff lang" do
     setup do
-      @tess = Tesseract::Process.new(TEST_FILE, {:lang => 'butts'})
+      @tess = Tesseract::Process.new(TEST_FILE, {:lang => :butts})
     end
     should "have lang of butts" do
-      assert_equal 'butts', @tess.lang
+      assert_equal :butts, @tess.lang
     end
   end
-  
+
   context "tesseract configs" do
     setup do
-      @tess = Tesseract::Process.new(TEST_FILE, {:chop_enable=>0})
+      config = {:chop_enable => 0}
+      @tess = Tesseract::Process.new(TEST_FILE, {:tesseract_options => config})
     end
     should "return text" do
       assert !@tess.to_s.empty?
     end
-    should "hanve lang of eng" do
-      assert_equal 'eng', @tess.lang
+    should "have lang of eng" do
+      assert_equal :eng, @tess.lang
     end
   end
-  
 end
